@@ -53,7 +53,9 @@ cuadroDecimal.grid(row=3, column=1)
 
 #metodo conversor de decimal a binario
 def decimal_a_binario():
-    miResultado2.set(bin(int(cuadroDecimal.get())))
+    binario = bin(int(cuadroDecimal.get()))  # Obtiene la representación binaria con "0b"
+    binario_sin_prefix = str(binario)[2:]    # Quita los primeros dos caracteres (0b)
+    miResultado2.set(binario_sin_prefix)
 
 botonConversor2 = Button(raiz, text="Convertir de decimal a binario"    , 
                          command=decimal_a_binario)
