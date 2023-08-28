@@ -1,12 +1,14 @@
 #importamos todos los elementos de tkinter que sera nuestra interfaz
 from tkinter import *
+import socket
+import psutil
 
 raiz = Tk()
 raiz.title("Conversor de unidades")
 raiz.resizable(0,0)
-raiz.geometry("650x350")
+raiz.geometry("650x500")
 
-miFrame = Frame(raiz, width=1200, height=600)
+miFrame = Frame(raiz, width=1200, height=1200)
 miFrame.pack()
 
 #-----------------CONVERSOR DE BINARIO A DECIMAL------------------
@@ -90,11 +92,50 @@ botonConversor2 = Button(raiz, text="Convertir numero IP a hexadecimal"    ,
                          command=ip_decimal_to_hex)
 botonConversor2.pack()
 
+
 nombreLabel2= Label(miFrame, text="Resultado numero hexadecimal: ")
 nombreLabel2.grid(row=6,column=0, pady=10)
 cuadroResultado3 = Entry(miFrame, textvariable=resultadoHexadecimal)
 cuadroResultado3.config(state=DISABLED)
 cuadroResultado3.grid(row=6, column=1)
+
+#-----------------OBTENER IP Y MASCARA DE RED------------------
+resultadoIp=StringVar()
+resultadoMascara=StringVar()
+def obtener_informacion_red():
+    # Obtener la dirección IP del host local
+    direccion_ip = socket.gethostbyname(socket.gethostname())
+
+    # Obtener la información de las interfaces de red
+    interfaces = psutil.net_if_addrs()
+
+    # Filtrar y obtener la máscara de red de la interfaz activa
+    mascara_red = None
+    for interface, addrs in interfaces.items():
+        for addr in addrs:
+            if addr.family == socket.AF_INET and addr.address == direccion_ip:
+                mascara_red = addr.netmask
+                break
+    resultadoIp.set(direccion_ip)
+    resultadoMascara.set(mascara_red)
+    return direccion_ip, mascara_red
+
+
+nombreLabel3= Label(miFrame, text="Resultado de IP: ")
+nombreLabel3.grid(row=7,column=0, pady=10)
+cuadroResultado4 = Entry(miFrame, textvariable=resultadoIp)
+cuadroResultado4.config(state=DISABLED)
+cuadroResultado4.grid(row=7, column=1)
+
+nombreLabel4= Label(miFrame, text="Mascara de RED: ")
+nombreLabel4.grid(row=8,column=0, pady=10)
+cuadroResultado5 = Entry(miFrame, textvariable=resultadoMascara)
+cuadroResultado5.config(state=DISABLED)
+cuadroResultado5.grid(row=8, column=1)
+
+botonConversor2 = Button(raiz, text="Obtener IP y mascara de RED"    , 
+                         command=obtener_informacion_red)
+botonConversor2.pack()
 
 #encargado de correr la interfaz (bucle infinito)
 raiz.mainloop()
